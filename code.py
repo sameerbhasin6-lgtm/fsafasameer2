@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -182,17 +181,28 @@ def analyze_metrics(text, red_flag_df):
         "one_time_count": one_time_count
     }
 
-# --- SIDEBAR ---
+# --- SIDEBAR (REORDERED) ---
 with st.sidebar:
     st.title("🕵️‍♂️ Forensic Settings")
-    st.subheader("Financial Inputs (For Credit Score)")
-    net_debt = st.number_input("Net Debt (Millions)", value=0.0)
-    ebitda = st.number_input("EBITDA (Millions)", value=0.0)
-    interest_expense = st.number_input("Interest Expense (Millions)", value=0.0)
-    st.markdown("---")
+    
+    # 1. FILE UPLOADS (MOVED TO TOP)
+    st.subheader("1. Document Upload")
     uploaded_file = st.file_uploader("Upload Current Report (PDF)", type="pdf", key="curr")
     prev_file = st.file_uploader("Upload Previous Report (PDF)", type="pdf", key="prev")
+    
     st.markdown("---")
+    
+    # 2. FINANCIAL INPUTS (MOVED BELOW)
+    st.subheader("2. Financial Inputs (For Credit Score)")
+    st.caption("Enter key figures from the Balance Sheet (in Millions)")
+    net_debt = st.number_input("Net Debt", value=0.0)
+    ebitda = st.number_input("EBITDA", value=0.0)
+    interest_expense = st.number_input("Interest Expense", value=0.0)
+    
+    st.markdown("---")
+    
+    # 3. OTHER SETTINGS
+    st.subheader("3. Configuration")
     uploaded_dict = st.file_uploader("Upload Red Flag List (CSV)", type=["csv"])
     use_all = st.checkbox("Scan Entire Document", value=False)
     if not use_all:
@@ -227,7 +237,6 @@ if uploaded_file:
         st.caption(f"Analyzing {metrics['total_words']:,} words against {len(red_flags_df)} Red Flags.")
 
         # --- PERSISTENT HEADER (FLASHCARDS) ---
-        # These appear on all "pages" because they are outside the tabs
         col1, col2, col3, col4 = st.columns(4)
         with col1:
             risk = "High" if metrics['fog_index'] > 18 else "Low"
@@ -305,7 +314,7 @@ if uploaded_file:
                 fig_reg.update_layout(height=400)
                 st.plotly_chart(fig_reg, use_container_width=True)
 
-        # --- TAB 3: HEATMAP (RESTORED) ---
+        # --- TAB 3: HEATMAP ---
         with tab3:
             st.markdown('<div class="section-header">🔥 Linguistic Risk Heatmap</div>', unsafe_allow_html=True)
             st.write("Analysis of linguistic patterns in specific sensitive disclosure areas.")
@@ -327,7 +336,7 @@ if uploaded_file:
                     else:
                         st.markdown(f"""<div style="border:1px solid #ddd; padding:10px; border-radius:5px; margin-bottom:10px; opacity: 0.6;"><strong>{section_name}</strong><br><span style="font-size:12px; color:#666;">Keyword not found.</span></div>""", unsafe_allow_html=True)
 
-        # --- TAB 4: CREDIT RISK & CONCLUSION ---
+        # --- TAB 4: CREDIT & CONCLUSION ---
         with tab4:
             st.markdown('<div class="section-header">💳 Credit Risk & Intent Analysis</div>', unsafe_allow_html=True)
             cr_col1, cr_col2, cr_col3 = st.columns(3)
