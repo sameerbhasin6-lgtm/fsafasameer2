@@ -1,0 +1,11 @@
+streamlit
+pandas
+plotly
+matplotlib
+wordcloud
+textstat
+scikit-learn
+pypdf
+textblob
+openpyxl
+statsmodels
